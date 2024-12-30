@@ -50,7 +50,9 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background to show nearby campaigns.</string>
 	<key>io.flutter.embedded_views_preview</key>
-	<true/> 
+	<true/>
+	<key>GOOGLE_MAPS_API_KEY</key>
+	<string>$(GOOGLE_MAPS_API_KEY)</string>
 </dict>
 </plist>
 
