@@ -38,23 +38,17 @@ async fn get_campaigns(service: web::Data<CampaignService>) -> Result<HttpRespon
 }
 
 #[get("/{id}")]
-async fn get_campaign_by_id(path: web::Path<Uuid>) -> Result<HttpResponse> {
+async fn get_campaign_by_id(
+    path: web::Path<Uuid>,
+    service: web::Data<CampaignService>
+) -> Result<HttpResponse> {
     let campaign_id = path.into_inner();
-    // TODO: Replace with DB query
-    let campaign = CampaignModel {
-        id: campaign_id,
-        title: "Test Campaign".to_string(),
-        description: "Test Description".to_string(),
-        creator_id: Uuid::new_v4(),
-        target_amount: dec!(1000.0),
-        current_amount: dec!(500.0),
-        location_lat: 33.7490,
-        location_lng: -84.3880,
-        created_at: OffsetDateTime::now_utc(),
-        ends_at: OffsetDateTime::now_utc() + Duration::days(30),
-    };
-
-    Ok(HttpResponse::Ok().json(campaign))
+    
+    match service.get_campaign_by_id(campaign_id).await {
+        Ok(Some(campaign)) => Ok(HttpResponse::Ok().json(campaign)),
+        Ok(None) => Ok(HttpResponse::NotFound().finish()),
+        Err(e) => Err(actix_web::error::ErrorInternalServerError(e)),
+    }
 }
 
 #[post("")]

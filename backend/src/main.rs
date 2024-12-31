@@ -2,7 +2,6 @@ mod config;
 mod db;
 mod entities;
 mod handlers;
-mod models;
 mod routes;
 mod services;
 
