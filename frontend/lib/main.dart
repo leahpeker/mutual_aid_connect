@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'core/theme/app_theme.dart';
+import 'core/themes/app_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'features/shared/presentation/layouts/main_navigation_layout.dart';
 

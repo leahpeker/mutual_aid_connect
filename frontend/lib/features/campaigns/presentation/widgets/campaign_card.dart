@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/campaign.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/themes/app_theme.dart';
 
 class CampaignCard extends StatelessWidget {
   final Campaign campaign;
