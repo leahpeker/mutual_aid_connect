@@ -1,11 +1,11 @@
-use crate::entities::campaign::Model as CampaignModel;
 use crate::services::campaign::CampaignService;
 use actix_web::{delete, get, post, put, web, HttpResponse, Result};
 use rust_decimal::Decimal;
-use rust_decimal_macros::dec;
 use serde::Deserialize;
-use time::{Duration, OffsetDateTime};
+use time::OffsetDateTime;
 use uuid::Uuid;
+use sea_orm::DbErr;
+
 // Request structs for creating and updating campaigns
 #[derive(Deserialize)]
 pub struct CreateCampaignRequest {
@@ -52,39 +52,43 @@ async fn get_campaign_by_id(
 }
 
 #[post("")]
-async fn create_campaign(campaign: web::Json<CreateCampaignRequest>) -> Result<HttpResponse> {
-    // TODO: Replace with DB insert
-    let new_campaign = CampaignModel {
-        id: Uuid::new_v4(),
-        title: campaign.title.clone(),
-        description: campaign.description.clone(),
-        creator_id: Uuid::new_v4(), // TODO: Get from auth context
-        target_amount: campaign.target_amount,
-        current_amount: dec!(0.0),
-        location_lat: campaign.location_lat,
-        location_lng: campaign.location_lng,
-        created_at: OffsetDateTime::now_utc(),
-        ends_at: campaign.ends_at,
-    };
-
-    Ok(HttpResponse::Created().json(new_campaign))
+async fn create_campaign(
+    campaign: web::Json<CreateCampaignRequest>,
+    service: web::Data<CampaignService>
+) -> Result<HttpResponse> {
+    match service.create_campaign(campaign.0).await {
+        Ok(campaign) => Ok(HttpResponse::Created().json(campaign)),
+        Err(e) => Err(actix_web::error::ErrorInternalServerError(e)),
+    }
 }
 
 #[put("/{id}")]
 async fn update_campaign(
     path: web::Path<Uuid>,
     campaign: web::Json<UpdateCampaignRequest>,
+    service: web::Data<CampaignService>,
 ) -> Result<HttpResponse> {
     let campaign_id = path.into_inner();
-    // TODO: Replace with DB update
-
-    Ok(HttpResponse::Ok().json(format!("Campaign {} updated", campaign_id)))
+    match service.update_campaign(campaign_id, campaign.0).await {
+        Ok(campaign) => Ok(HttpResponse::Ok().json(campaign)),
+        Err(e) => match e {
+            DbErr::Custom(msg) if msg == "Campaign not found" => Ok(HttpResponse::NotFound().finish()),
+            _ => Err(actix_web::error::ErrorInternalServerError(e)),
+        },
+    }
 }
 
 #[delete("/{id}")]
-async fn delete_campaign(path: web::Path<Uuid>) -> Result<HttpResponse> {
+async fn delete_campaign(
+    path: web::Path<Uuid>,
+    service: web::Data<CampaignService>,
+) -> Result<HttpResponse> {
     let campaign_id = path.into_inner();
-    // TODO: Replace with DB delete
-
-    Ok(HttpResponse::NoContent().finish())
+    match service.delete_campaign(campaign_id).await {
+        Ok(_) => Ok(HttpResponse::NoContent().finish()),
+        Err(e) => match e {
+            DbErr::Custom(msg) if msg == "Campaign not found" => Ok(HttpResponse::NotFound().finish()),
+            _ => Err(actix_web::error::ErrorInternalServerError(e)),
+        },
+    }
 }
