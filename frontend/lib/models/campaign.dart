@@ -18,4 +18,4 @@ class Campaign {
     this.createdAt,
     required this.imageUrl,
   });
-} 
+}

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'core/theme/app_theme.dart';
 import 'views/main_layout.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MutualAidConnectApp());
 }
 

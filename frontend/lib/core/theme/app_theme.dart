@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static const Color accentGray = Color(0xFFCCCCCC);
   static const Color buttonRed = Color(0xFFE53935);
-  
+
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Colors.black,
@@ -25,4 +25,4 @@ class AppTheme {
       elevation: 0,
     ),
   );
-} 
+}

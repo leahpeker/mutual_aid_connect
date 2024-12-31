@@ -11,3 +11,4 @@ sqlx = { version = "0.8.2", features = ["runtime-tokio-rustls", "postgres", "uui
 tokio = { version = "1.0", features = ["full"] }
 uuid = { version = "1.6", features = ["serde", "v4"] }
 chrono = { version = "0.4", features = ["serde"] }
+dotenv = "0.15"

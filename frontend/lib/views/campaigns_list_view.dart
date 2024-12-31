@@ -8,12 +8,14 @@ class CampaignsListView extends StatelessWidget {
     Campaign(
       id: '1',
       title: 'Community Food Drive',
-      description: 'Help us provide food for families in need in our local community.',
+      description:
+          'Help us provide food for families in need in our local community.',
       organizer: 'Local Food Bank',
       goalAmount: 5000.0,
       currentAmount: 2500.0,
       createdAt: DateTime.now(),
-      imageUrl: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800',  // Food bank image
+      imageUrl:
+          'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800', // Food bank image
     ),
     Campaign(
       id: '2',
@@ -23,17 +25,20 @@ class CampaignsListView extends StatelessWidget {
       goalAmount: 10000.0,
       currentAmount: 3000.0,
       createdAt: DateTime.now(),
-      imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800',  // Housing image
+      imageUrl:
+          'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800', // Housing image
     ),
     Campaign(
       id: '3',
       title: 'Youth Education Fund',
-      description: 'Supporting after-school programs for underprivileged youth.',
+      description:
+          'Supporting after-school programs for underprivileged youth.',
       organizer: 'Education For All',
       goalAmount: 7500.0,
       currentAmount: 4200.0,
       createdAt: DateTime.now(),
-      imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800',  // Education image
+      imageUrl:
+          'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800', // Education image
     ),
   ];
 
@@ -65,13 +70,14 @@ class CampaignsListView extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.grey[800],
                       image: DecorationImage(
-                        image: NetworkImage(campaign.imageUrl),  // Changed to NetworkImage
+                        image: NetworkImage(
+                            campaign.imageUrl), // Changed to NetworkImage
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
                 ),
-                
+
                 // Campaign Meta Data
                 Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -95,7 +101,7 @@ class CampaignsListView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Donor Info Row with Support Button
                       Row(
                         children: [
@@ -168,4 +174,4 @@ class CampaignsListView extends StatelessWidget {
       ),
     );
   }
-} 
+}
