@@ -10,17 +10,20 @@ serde_json = "1.0"
 sqlx = { version = "0.8.2", features = ["runtime-tokio-rustls", "postgres", "uuid", "time"] }
 tokio = { version = "1.0", features = ["full"] }
 uuid = { version = "1.6", features = ["serde", "v4"] }
-chrono = { version = "0.4", features = ["serde"] }
+time = { version = "0.3", features = ["serde"] }
 dotenv = "0.15"
 sea-orm = { version = "1.1.3", features = [
     "sqlx-postgres",
     "runtime-tokio-rustls",
+    "mock",
     "macros",
     "with-uuid",
-    "with-chrono",
-    "with-decimal"
+    "with-rust_decimal",
+    "with-json",
+    "with-time",
 ] }
-decimal = "2.1"
+rust_decimal = { version = "1.32", features = ["serde"] }
+rust_decimal_macros = "1.32"
 
 [lib]
 path = "src/lib.rs"

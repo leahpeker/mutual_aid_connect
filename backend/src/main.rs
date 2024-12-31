@@ -1,5 +1,6 @@
 mod config;
 mod db;
+mod entities;
 mod handlers;
 mod models;
 mod routes;
@@ -16,8 +17,8 @@ async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
 
     let config = Config::from_env();
-    let pool = establish_connection().await;
-    let campaign_service = web::Data::new(CampaignService::new(pool.clone()));
+    let db = establish_connection().await;
+    let campaign_service = web::Data::new(CampaignService::new(db));
 
     HttpServer::new(move || {
         App::new()
