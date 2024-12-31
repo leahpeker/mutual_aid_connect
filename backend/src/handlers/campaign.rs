@@ -1,102 +1,94 @@
-use crate::models::campaign::{Campaign, CampaignMetadata};
+use crate::services::campaign::CampaignService;
 use actix_web::{delete, get, post, put, web, HttpResponse, Result};
-use chrono::DateTime;
-use chrono::Utc;
+use rust_decimal::Decimal;
 use serde::Deserialize;
+use time::OffsetDateTime;
 use uuid::Uuid;
+use sea_orm::DbErr;
 
 // Request structs for creating and updating campaigns
 #[derive(Deserialize)]
 pub struct CreateCampaignRequest {
     pub title: String,
     pub description: String,
-    pub target_amount: f64,
+    pub target_amount: Decimal,
     pub location_lat: f64,
     pub location_lng: f64,
-    pub ends_at: DateTime<Utc>,
+    pub ends_at: OffsetDateTime,
 }
 
 #[derive(Deserialize)]
 pub struct UpdateCampaignRequest {
     pub title: Option<String>,
     pub description: Option<String>,
-    pub target_amount: Option<f64>,
+    pub target_amount: Option<Decimal>,
     pub location_lat: Option<f64>,
     pub location_lng: Option<f64>,
-    pub ends_at: Option<DateTime<Utc>>,
+    pub ends_at: Option<OffsetDateTime>,
 }
 
-#[get("/campaigns")]
-async fn get_campaigns() -> Result<HttpResponse> {
-    // TODO: Replace with DB query
-    let campaigns = vec![CampaignMetadata {
-        id: Uuid::new_v4(),
-        title: "Test Campaign".to_string(),
-        description: "Test Description".to_string(),
-        target_amount: 1000.0,
-        current_amount: 500.0,
-        location_lat: 33.7490,
-        location_lng: -84.3880,
-        ends_at: Utc::now() + chrono::Duration::days(30),
-    }];
+#[get("")]
+async fn get_campaigns(service: web::Data<CampaignService>) -> Result<HttpResponse> {
+    let campaigns = service
+        .get_campaigns()
+        .await
+        .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
 
     Ok(HttpResponse::Ok().json(campaigns))
 }
 
-#[get("/campaigns/{id}")]
-async fn get_campaign_by_id(path: web::Path<Uuid>) -> Result<HttpResponse> {
+#[get("/{id}")]
+async fn get_campaign_by_id(
+    path: web::Path<Uuid>,
+    service: web::Data<CampaignService>
+) -> Result<HttpResponse> {
     let campaign_id = path.into_inner();
-    // TODO: Replace with DB query
-    let campaign = Campaign {
-        id: campaign_id,
-        title: "Test Campaign".to_string(),
-        description: "Test Description".to_string(),
-        creator_id: Uuid::new_v4(),
-        target_amount: 1000.0,
-        current_amount: 500.0,
-        location_lat: 33.7490,
-        location_lng: -84.3880,
-        created_at: Utc::now(),
-        ends_at: Utc::now() + chrono::Duration::days(30),
-    };
-
-    Ok(HttpResponse::Ok().json(campaign))
+    
+    match service.get_campaign_by_id(campaign_id).await {
+        Ok(Some(campaign)) => Ok(HttpResponse::Ok().json(campaign)),
+        Ok(None) => Ok(HttpResponse::NotFound().finish()),
+        Err(e) => Err(actix_web::error::ErrorInternalServerError(e)),
+    }
 }
 
-#[post("/campaigns")]
-async fn create_campaign(campaign: web::Json<CreateCampaignRequest>) -> Result<HttpResponse> {
-    // TODO: Replace with DB insert
-    let new_campaign = Campaign {
-        id: Uuid::new_v4(),
-        title: campaign.title.clone(),
-        description: campaign.description.clone(),
-        creator_id: Uuid::new_v4(), // TODO: Get from auth context
-        target_amount: campaign.target_amount,
-        current_amount: 0.0,
-        location_lat: campaign.location_lat,
-        location_lng: campaign.location_lng,
-        created_at: Utc::now(),
-        ends_at: campaign.ends_at,
-    };
-
-    Ok(HttpResponse::Created().json(new_campaign))
+#[post("")]
+async fn create_campaign(
+    campaign: web::Json<CreateCampaignRequest>,
+    service: web::Data<CampaignService>
+) -> Result<HttpResponse> {
+    match service.create_campaign(campaign.0).await {
+        Ok(campaign) => Ok(HttpResponse::Created().json(campaign)),
+        Err(e) => Err(actix_web::error::ErrorInternalServerError(e)),
+    }
 }
 
-#[put("/campaigns/{id}")]
+#[put("/{id}")]
 async fn update_campaign(
     path: web::Path<Uuid>,
     campaign: web::Json<UpdateCampaignRequest>,
+    service: web::Data<CampaignService>,
 ) -> Result<HttpResponse> {
     let campaign_id = path.into_inner();
-    // TODO: Replace with DB update
-
-    Ok(HttpResponse::Ok().json(format!("Campaign {} updated", campaign_id)))
+    match service.update_campaign(campaign_id, campaign.0).await {
+        Ok(campaign) => Ok(HttpResponse::Ok().json(campaign)),
+        Err(e) => match e {
+            DbErr::Custom(msg) if msg == "Campaign not found" => Ok(HttpResponse::NotFound().finish()),
+            _ => Err(actix_web::error::ErrorInternalServerError(e)),
+        },
+    }
 }
 
-#[delete("/campaigns/{id}")]
-async fn delete_campaign(path: web::Path<Uuid>) -> Result<HttpResponse> {
+#[delete("/{id}")]
+async fn delete_campaign(
+    path: web::Path<Uuid>,
+    service: web::Data<CampaignService>,
+) -> Result<HttpResponse> {
     let campaign_id = path.into_inner();
-    // TODO: Replace with DB delete
-
-    Ok(HttpResponse::NoContent().finish())
+    match service.delete_campaign(campaign_id).await {
+        Ok(_) => Ok(HttpResponse::NoContent().finish()),
+        Err(e) => match e {
+            DbErr::Custom(msg) if msg == "Campaign not found" => Ok(HttpResponse::NotFound().finish()),
+            _ => Err(actix_web::error::ErrorInternalServerError(e)),
+        },
+    }
 }

@@ -1,32 +1,31 @@
+mod config;
 mod db;
+mod entities;
 mod handlers;
-mod models;
+mod routes;
+mod services;
 
 use actix_web::{middleware, web, App, HttpServer};
+use config::Config;
 use db::establish_connection;
-use dotenv::dotenv;
-use handlers::campaign::*;
+use routes::campaign::campaign_routes;
+use services::campaign::CampaignService;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenv().ok();
+    dotenv::dotenv().ok();
 
-    let pool = establish_connection().await;
+    let config = Config::from_env();
+    let db = establish_connection().await;
+    let campaign_service = web::Data::new(CampaignService::new(db));
 
     HttpServer::new(move || {
         App::new()
-            .app_data(web::Data::new(pool.clone()))
+            .app_data(campaign_service.clone())
             .wrap(middleware::Logger::default())
-            .service(
-                web::scope("/api")
-                    .service(get_campaigns)
-                    .service(get_campaign_by_id)
-                    .service(create_campaign)
-                    .service(update_campaign)
-                    .service(delete_campaign),
-            )
+            .service(web::scope("/api").configure(campaign_routes))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind((config.server_host, config.server_port))?
     .run()
     .await
 }
