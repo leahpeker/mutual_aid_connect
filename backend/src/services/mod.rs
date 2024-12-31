@@ -1,1 +1,1 @@
-pub mod campaign; 
+pub mod campaign;
