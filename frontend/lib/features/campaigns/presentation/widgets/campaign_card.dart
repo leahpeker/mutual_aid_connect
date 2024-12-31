@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../domain/campaign.dart';
+import '../../domain/models/campaign.dart';
 import '../../../../core/themes/app_theme.dart';
 
 class CampaignCard extends StatelessWidget {

@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import '../../domain/models/campaign.dart';
 import '../providers/campaign_provider.dart';
+import 'campaign_card.dart';
+
 
 class CampaignList extends ConsumerWidget {
   const CampaignList({super.key});
@@ -22,24 +25,3 @@ class CampaignList extends ConsumerWidget {
     );
   }
 }
-
-class CampaignCard extends StatelessWidget {
-  final Campaign campaign;
-
-  const CampaignCard({super.key, required this.campaign});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: ListTile(
-        title: Text(campaign.title),
-        subtitle: Text(campaign.description),
-        // Add more campaign details as needed
-        onTap: () {
-          // Handle campaign selection
-        },
-      ),
-    );
-  }
-} 
