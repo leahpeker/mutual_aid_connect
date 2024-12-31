@@ -1,4 +1,5 @@
-use crate::models::campaign::{Campaign, CampaignMetadata};
+use crate::models::campaign::Campaign;
+use crate::services::campaign::CampaignService;
 use actix_web::{delete, get, post, put, web, HttpResponse, Result};
 use chrono::DateTime;
 use chrono::Utc;
@@ -27,18 +28,11 @@ pub struct UpdateCampaignRequest {
 }
 
 #[get("/campaigns")]
-async fn get_campaigns() -> Result<HttpResponse> {
-    // TODO: Replace with DB query
-    let campaigns = vec![CampaignMetadata {
-        id: Uuid::new_v4(),
-        title: "Test Campaign".to_string(),
-        description: "Test Description".to_string(),
-        target_amount: 1000.0,
-        current_amount: 500.0,
-        location_lat: 33.7490,
-        location_lng: -84.3880,
-        ends_at: Utc::now() + chrono::Duration::days(30),
-    }];
+async fn get_campaigns(service: web::Data<CampaignService>) -> Result<HttpResponse> {
+    let campaigns = service
+        .get_campaigns()
+        .await
+        .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
 
     Ok(HttpResponse::Ok().json(campaigns))
 }
