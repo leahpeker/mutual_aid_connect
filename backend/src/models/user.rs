@@ -1,6 +1,6 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::{DateTime, Utc};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
@@ -10,4 +10,4 @@ pub struct User {
     pub created_at: DateTime<Utc>,
     #[serde(skip_serializing)]
     pub password_hash: String,
-} 
+}

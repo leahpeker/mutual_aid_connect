@@ -21,23 +21,23 @@ class _MapViewState extends State<MapView> {
 
   void _onMapCreated(GoogleMapController controller) async {
     if (!mounted) return;
-    
+
     setState(() {
       mapController = controller;
       _mapInitialized = true;
     });
-    
+
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     if (!mounted) return;
-    
+
     controller.animateCamera(CameraUpdate.newCameraPosition(_initialPosition));
     _addMarkers();
   }
 
   void _addMarkers() {
     if (!_mapInitialized) return;
-    
+
     setState(() {
       _markers.add(
         const Marker(
@@ -147,4 +147,4 @@ class MapStyle {
   }
 ]''';
   }
-} 
+}

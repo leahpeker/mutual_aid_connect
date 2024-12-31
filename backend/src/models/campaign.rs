@@ -1,6 +1,6 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::{DateTime, Utc};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Campaign {
@@ -26,4 +26,4 @@ pub struct CampaignMetadata {
     pub location_lat: f64,
     pub location_lng: f64,
     pub ends_at: DateTime<Utc>,
-} 
+}

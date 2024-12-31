@@ -1,2 +1,2 @@
+pub mod campaign;
 pub mod user;
-pub mod campaign; 
