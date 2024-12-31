@@ -1,4 +1,4 @@
-use crate::models::campaign::Campaign;
+use crate::entities::campaign::Model as CampaignModel;
 use crate::services::campaign::CampaignService;
 use actix_web::{delete, get, post, put, web, HttpResponse, Result};
 use rust_decimal::Decimal;
@@ -41,7 +41,7 @@ async fn get_campaigns(service: web::Data<CampaignService>) -> Result<HttpRespon
 async fn get_campaign_by_id(path: web::Path<Uuid>) -> Result<HttpResponse> {
     let campaign_id = path.into_inner();
     // TODO: Replace with DB query
-    let campaign = Campaign {
+    let campaign = CampaignModel {
         id: campaign_id,
         title: "Test Campaign".to_string(),
         description: "Test Description".to_string(),
@@ -60,7 +60,7 @@ async fn get_campaign_by_id(path: web::Path<Uuid>) -> Result<HttpResponse> {
 #[post("")]
 async fn create_campaign(campaign: web::Json<CreateCampaignRequest>) -> Result<HttpResponse> {
     // TODO: Replace with DB insert
-    let new_campaign = Campaign {
+    let new_campaign = CampaignModel {
         id: Uuid::new_v4(),
         title: campaign.title.clone(),
         description: campaign.description.clone(),
