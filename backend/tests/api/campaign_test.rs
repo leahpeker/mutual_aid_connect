@@ -1,13 +1,21 @@
 use actix_web::{test, web, App};
-use backend::routes; // Note: your crate name might be different
+use backend::{routes, services::campaign::CampaignService};
+use sea_orm::{Database, DatabaseConnection};
 
 #[actix_web::test]
 async fn test_get_campaigns() {
-    println!("Running get campaigns test!"); // Debug print
+    // Setup test database
+    let db: DatabaseConnection =
+        Database::connect("postgres://leahpeker@localhost:5432/mutual_aid_connect_test")
+            .await
+            .unwrap();
+    let campaign_service = web::Data::new(CampaignService::new(db));
 
-    // Setup
+    // Setup app
     let app = test::init_service(
-        App::new().service(web::scope("/api").configure(routes::campaign::campaign_routes)),
+        App::new()
+            .app_data(campaign_service)
+            .service(web::scope("/api").configure(routes::campaign::campaign_routes)),
     )
     .await;
 
