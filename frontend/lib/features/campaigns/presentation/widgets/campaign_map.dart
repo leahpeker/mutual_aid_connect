@@ -21,7 +21,6 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
   }
 
   Future<void> _getCurrentLocation() async {
-    
     try {
       // Check services
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -31,7 +30,7 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
 
       // Check permission
       LocationPermission permission = await Geolocator.checkPermission();
-      
+
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
@@ -41,13 +40,11 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
 
       // Get location
       Position position = await Geolocator.getCurrentPosition();
-      
+
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
       });
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
 
   void _showCampaignDetails(BuildContext context, Campaign campaign) {
@@ -124,15 +121,19 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
             onMapCreated: (GoogleMapController controller) {
               _mapController = controller;
             },
-            markers: campaigns.map((campaign) => Marker(
-              markerId: MarkerId(campaign.id),
-              position: LatLng(campaign.locationLat, campaign.locationLng),
-              infoWindow: InfoWindow(
-                title: campaign.title,
-                snippet: '\$${campaign.targetAmount.toStringAsFixed(2)} goal',
-              ),
-              onTap: () => _showCampaignDetails(context, campaign),
-            )).toSet(),
+            markers: campaigns
+                .map((campaign) => Marker(
+                      markerId: MarkerId(campaign.id),
+                      position:
+                          LatLng(campaign.locationLat, campaign.locationLng),
+                      infoWindow: InfoWindow(
+                        title: campaign.title,
+                        snippet:
+                            '\$${campaign.targetAmount.toStringAsFixed(2)} goal',
+                      ),
+                      onTap: () => _showCampaignDetails(context, campaign),
+                    ))
+                .toSet(),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
