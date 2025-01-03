@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'core/theme/app_theme.dart';
-import 'views/main_layout.dart';
+import 'core/themes/app_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'features/shared/presentation/layouts/main_navigation_layout.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
-  runApp(const MutualAidConnectApp());
+  runApp(
+    ProviderScope(
+      child: MutualAidConnectApp(),
+    ),
+  );
 }
 
 class MutualAidConnectApp extends StatelessWidget {
@@ -16,7 +21,7 @@ class MutualAidConnectApp extends StatelessWidget {
     return MaterialApp(
       title: 'Mutual Aid Connect',
       theme: AppTheme.darkTheme,
-      home: const MainLayout(),
+      home: const MainNavigationLayout(),
     );
   }
 }

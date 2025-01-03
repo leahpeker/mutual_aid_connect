@@ -1,8 +1,8 @@
+use crate::common::fixtures::test_campaign;
+use backend::handlers::campaign::{CreateCampaignRequest, UpdateCampaignRequest};
 use backend::services::campaign::CampaignService;
 use rust_decimal_macros::dec;
 use sea_orm::{DatabaseBackend, DbErr, MockDatabase, MockExecResult};
-use backend::handlers::campaign::{CreateCampaignRequest, UpdateCampaignRequest};
-use crate::common::fixtures::test_campaign;
 
 #[actix_web::test]
 async fn test_get_campaigns() -> Result<(), DbErr> {
@@ -27,13 +27,13 @@ async fn test_get_campaign_by_id() -> Result<(), DbErr> {
     let test_campaign = test_campaign();
 
     let db = MockDatabase::new(DatabaseBackend::Postgres)
-        .append_query_results(vec![
-            vec![test_campaign.clone()],
-        ])
+        .append_query_results(vec![vec![test_campaign.clone()]])
         .into_connection();
 
     assert_eq!(
-        CampaignService::new(db).get_campaign_by_id(test_campaign.id).await,
+        CampaignService::new(db)
+            .get_campaign_by_id(test_campaign.id)
+            .await,
         Ok(Some(test_campaign.clone()))
     );
 
@@ -44,11 +44,9 @@ async fn test_get_campaign_by_id() -> Result<(), DbErr> {
 async fn test_create_campaign() -> Result<(), DbErr> {
     let mut test_campaign = test_campaign();
     test_campaign.current_amount = dec!(0.0);
-    
+
     let db = MockDatabase::new(DatabaseBackend::Postgres)
-        .append_query_results(vec![
-            vec![test_campaign.clone()],
-        ])
+        .append_query_results(vec![vec![test_campaign.clone()]])
         .into_connection();
 
     let create_request = CreateCampaignRequest {
@@ -82,10 +80,10 @@ async fn test_update_campaign() -> Result<(), DbErr> {
         c.title = "Updated Title".to_string();
         c
     };
-    
+
     let db = MockDatabase::new(DatabaseBackend::Postgres)
         .append_query_results(vec![
-            vec![test_campaign.clone()], // For find_by_id
+            vec![test_campaign.clone()],    // For find_by_id
             vec![updated_campaign.clone()], // For update result
         ])
         .into_connection();
@@ -112,14 +110,12 @@ async fn test_update_campaign() -> Result<(), DbErr> {
 #[actix_web::test]
 async fn test_delete_campaign() -> Result<(), DbErr> {
     let test_campaign = test_campaign();
-    
+
     let db = MockDatabase::new(DatabaseBackend::Postgres)
-        .append_exec_results(vec![
-            MockExecResult {
-                last_insert_id: 0,
-                rows_affected: 1,
-            },
-        ])
+        .append_exec_results(vec![MockExecResult {
+            last_insert_id: 0,
+            rows_affected: 1,
+        }])
         .into_connection();
 
     let result = CampaignService::new(db)
