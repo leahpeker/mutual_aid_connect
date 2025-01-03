@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import '../../domain/models/campaign.dart';
 import '../providers/campaign_provider.dart';
 import 'campaign_card.dart';
 

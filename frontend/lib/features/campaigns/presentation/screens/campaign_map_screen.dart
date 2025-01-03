@@ -10,7 +10,7 @@ class CampaignMapScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Campaign Map'),
       ),
-      body: const CampaignMap(),
+      body: CampaignMap(),
     );
   }
 }
