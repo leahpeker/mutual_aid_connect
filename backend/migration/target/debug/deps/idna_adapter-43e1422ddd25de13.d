@@ -1,7 +1,0 @@
-/Users/leahpeker/workspace/mutual_aid_connect/backend/migration/target/debug/deps/libidna_adapter-43e1422ddd25de13.rmeta: /Users/leahpeker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna_adapter-1.2.0/src/lib.rs
-
-/Users/leahpeker/workspace/mutual_aid_connect/backend/migration/target/debug/deps/libidna_adapter-43e1422ddd25de13.rlib: /Users/leahpeker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna_adapter-1.2.0/src/lib.rs
-
-/Users/leahpeker/workspace/mutual_aid_connect/backend/migration/target/debug/deps/idna_adapter-43e1422ddd25de13.d: /Users/leahpeker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna_adapter-1.2.0/src/lib.rs
-
-/Users/leahpeker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna_adapter-1.2.0/src/lib.rs:
