@@ -17,6 +17,7 @@ pub struct Model {
     pub location_lng: f64,
     pub created_at: OffsetDateTime,
     pub ends_at: OffsetDateTime,
+    pub image: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

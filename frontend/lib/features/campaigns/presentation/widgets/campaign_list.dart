@@ -4,7 +4,6 @@ import '../../domain/models/campaign.dart';
 import '../providers/campaign_provider.dart';
 import 'campaign_card.dart';
 
-
 class CampaignList extends ConsumerWidget {
   const CampaignList({super.key});
 

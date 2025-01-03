@@ -14,7 +14,8 @@ class CampaignMap extends ConsumerStatefulWidget {
 }
 
 class _CampaignMapState extends ConsumerState<CampaignMap> {
-  final Completer<GoogleMapController> _mapController = Completer<GoogleMapController>();
+  final Completer<GoogleMapController> _mapController =
+      Completer<GoogleMapController>();
   bool _mapInitialized = false;
   final Set<Marker> _markers = <Marker>{};
 
@@ -40,7 +41,7 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
           _markers.add(
             Marker(
               markerId: MarkerId(campaign.id),
-              position: LatLng(campaign.latitude, campaign.longitude),
+              position: LatLng(campaign.locationLat, campaign.locationLng),
               infoWindow: InfoWindow(
                 title: campaign.title,
                 snippet: campaign.description,
@@ -72,4 +73,4 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
       },
     );
   }
-} 
+}

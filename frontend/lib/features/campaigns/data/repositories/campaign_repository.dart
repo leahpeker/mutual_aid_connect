@@ -10,7 +10,7 @@ class CampaignRepository {
     try {
       final response = await http.get(Uri.parse('$baseUrl/campaigns'));
       print('Response: ${response.body}');
-      
+
       if (response.statusCode == 200) {
         final List<dynamic> campaignsJson = json.decode(response.body);
         return campaignsJson.map((json) => Campaign.fromJson(json)).toList();
@@ -21,4 +21,4 @@ class CampaignRepository {
       throw Exception('Failed to connect to server: $e');
     }
   }
-} 
+}

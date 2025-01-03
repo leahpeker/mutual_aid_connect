@@ -1,10 +1,10 @@
 use crate::entities::campaign;
 use crate::handlers::campaign::{CreateCampaignRequest, UpdateCampaignRequest};
 use rust_decimal::Decimal;
+use sea_orm::ActiveValue::Set;
 use sea_orm::*;
 use time::OffsetDateTime;
 use uuid::Uuid;
-use sea_orm::ActiveValue::Set;
 
 pub struct CampaignService {
     db: DatabaseConnection,
@@ -23,12 +23,13 @@ impl CampaignService {
     }
 
     pub async fn get_campaign_by_id(&self, id: Uuid) -> Result<Option<campaign::Model>, DbErr> {
-        campaign::Entity::find_by_id(id)
-            .one(&self.db)
-            .await
+        campaign::Entity::find_by_id(id).one(&self.db).await
     }
 
-    pub async fn create_campaign(&self, req: CreateCampaignRequest) -> Result<campaign::Model, DbErr> {
+    pub async fn create_campaign(
+        &self,
+        req: CreateCampaignRequest,
+    ) -> Result<campaign::Model, DbErr> {
         let campaign = campaign::ActiveModel {
             id: Set(Uuid::new_v4()),
             title: Set(req.title),
@@ -45,7 +46,11 @@ impl CampaignService {
         campaign.insert(&self.db).await
     }
 
-    pub async fn update_campaign(&self, id: Uuid, req: UpdateCampaignRequest) -> Result<campaign::Model, DbErr> {
+    pub async fn update_campaign(
+        &self,
+        id: Uuid,
+        req: UpdateCampaignRequest,
+    ) -> Result<campaign::Model, DbErr> {
         let campaign = campaign::Entity::find_by_id(id)
             .one(&self.db)
             .await?
@@ -76,9 +81,7 @@ impl CampaignService {
     }
 
     pub async fn delete_campaign(&self, id: Uuid) -> Result<(), DbErr> {
-        let result = campaign::Entity::delete_by_id(id)
-            .exec(&self.db)
-            .await?;
+        let result = campaign::Entity::delete_by_id(id).exec(&self.db).await?;
 
         if result.rows_affected == 0 {
             return Err(DbErr::Custom("Campaign not found".to_string()));

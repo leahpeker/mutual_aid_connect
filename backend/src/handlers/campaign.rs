@@ -1,10 +1,10 @@
 use crate::services::campaign::CampaignService;
 use actix_web::{delete, get, post, put, web, HttpResponse, Result};
 use rust_decimal::Decimal;
+use sea_orm::DbErr;
 use serde::Deserialize;
 use time::OffsetDateTime;
 use uuid::Uuid;
-use sea_orm::DbErr;
 
 // Request structs for creating and updating campaigns
 #[derive(Deserialize)]
@@ -29,6 +29,7 @@ pub struct UpdateCampaignRequest {
 
 #[get("")]
 async fn get_campaigns(service: web::Data<CampaignService>) -> Result<HttpResponse> {
+    println!("Received GET request for campaigns");
     let campaigns = service
         .get_campaigns()
         .await
@@ -40,10 +41,10 @@ async fn get_campaigns(service: web::Data<CampaignService>) -> Result<HttpRespon
 #[get("/{id}")]
 async fn get_campaign_by_id(
     path: web::Path<Uuid>,
-    service: web::Data<CampaignService>
+    service: web::Data<CampaignService>,
 ) -> Result<HttpResponse> {
     let campaign_id = path.into_inner();
-    
+
     match service.get_campaign_by_id(campaign_id).await {
         Ok(Some(campaign)) => Ok(HttpResponse::Ok().json(campaign)),
         Ok(None) => Ok(HttpResponse::NotFound().finish()),
@@ -54,7 +55,7 @@ async fn get_campaign_by_id(
 #[post("")]
 async fn create_campaign(
     campaign: web::Json<CreateCampaignRequest>,
-    service: web::Data<CampaignService>
+    service: web::Data<CampaignService>,
 ) -> Result<HttpResponse> {
     match service.create_campaign(campaign.0).await {
         Ok(campaign) => Ok(HttpResponse::Created().json(campaign)),
@@ -72,7 +73,9 @@ async fn update_campaign(
     match service.update_campaign(campaign_id, campaign.0).await {
         Ok(campaign) => Ok(HttpResponse::Ok().json(campaign)),
         Err(e) => match e {
-            DbErr::Custom(msg) if msg == "Campaign not found" => Ok(HttpResponse::NotFound().finish()),
+            DbErr::Custom(msg) if msg == "Campaign not found" => {
+                Ok(HttpResponse::NotFound().finish())
+            }
             _ => Err(actix_web::error::ErrorInternalServerError(e)),
         },
     }
@@ -87,7 +90,9 @@ async fn delete_campaign(
     match service.delete_campaign(campaign_id).await {
         Ok(_) => Ok(HttpResponse::NoContent().finish()),
         Err(e) => match e {
-            DbErr::Custom(msg) if msg == "Campaign not found" => Ok(HttpResponse::NotFound().finish()),
+            DbErr::Custom(msg) if msg == "Campaign not found" => {
+                Ok(HttpResponse::NotFound().finish())
+            }
             _ => Err(actix_web::error::ErrorInternalServerError(e)),
         },
     }

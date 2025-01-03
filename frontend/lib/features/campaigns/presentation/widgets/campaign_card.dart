@@ -22,10 +22,12 @@ class CampaignCard extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.grey[800],
-                image: DecorationImage(
-                  image: NetworkImage(campaign.imageUrl),
-                  fit: BoxFit.cover,
-                ),
+                image: campaign.imageUrl != null
+                    ? DecorationImage(
+                        image: NetworkImage(campaign.imageUrl!),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
               ),
             ),
           ),
@@ -43,7 +45,7 @@ class CampaignCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${((campaign.currentAmount / campaign.goalAmount) * 100).toInt()}% funded',
+                  '${((campaign.currentAmount / campaign.targetAmount) * 100).toInt()}% funded',
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 14,
