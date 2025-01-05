@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../campaigns/presentation/screens/campaign_list_screen.dart';
 import '../../../campaigns/presentation/screens/campaign_map_screen.dart';
+import '../../../campaigns/presentation/screens/create_campaign_screen.dart';
 
 class MainNavigationLayout extends StatefulWidget {
   const MainNavigationLayout({super.key});
@@ -23,9 +24,27 @@ class _MainNavigationLayoutState extends State<MainNavigationLayout> {
     });
   }
 
+void _onCreateCampaign() {
+  Navigator.of(context).push(
+    MaterialPageRoute(builder: (context) => const CreateCampaignScreen()),
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mutual Aid Connect'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: _onCreateCampaign,
+            tooltip: 'Create Campaign',
+          ),
+        ],
+      ),
+      
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

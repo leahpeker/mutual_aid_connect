@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
+  print(dotenv.env['GMS_API_KEY']);
   runApp(
     ProviderScope(
       child: MutualAidConnectApp(),

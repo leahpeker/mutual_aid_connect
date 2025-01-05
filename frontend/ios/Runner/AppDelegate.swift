@@ -8,7 +8,8 @@ class AppDelegate: FlutterAppDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        GMSServices.provideAPIKey("AIzaSyCpNV8iADUiKyAUoEbJVG0rC6jmI05zug0")
+        let key = Bundle.main.object(forInfoDictionaryKey: "GMSApiKey") as? String ?? ""
+        GMSServices.provideAPIKey(key)
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }

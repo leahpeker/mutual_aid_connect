@@ -7,9 +7,6 @@ class CampaignListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mutual Aid Connect'),
-      ),
       body: const CampaignList(),
     );
   }
