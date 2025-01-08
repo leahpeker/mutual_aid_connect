@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/campaigns/data/providers/campaign_repository_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../screens/campaign_details_screen.dart';
 
 
 class CreateCampaignForm extends ConsumerStatefulWidget {
@@ -87,11 +88,11 @@ class _CreateCampaignFormState extends ConsumerState<CreateCampaignForm> {
 
       
 
-      const imageUrl = "https://via.placeholder.com/150";
+      const imageUrl = "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae";
 
       try {
         // Use ref.read inside the ConsumerState class context
-        await ref.read(campaignRepositoryProvider).createCampaign(
+        final campaign = await ref.read(campaignRepositoryProvider).createCampaign(
               title: title,
               description: description,
               targetAmount: targetAmount,
@@ -103,6 +104,14 @@ class _CreateCampaignFormState extends ConsumerState<CreateCampaignForm> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Campaign created successfully!')),
+        );
+
+
+        // Navigate to CampaignDetailsScreen
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CampaignDetailsScreen(campaignId: campaign.id),
+          ),
         );
 
         // Clear form after success

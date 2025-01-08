@@ -53,6 +53,8 @@
 	<true/>
 	<key>GMSApiKey</key>
 	<string>$(GMS_API_KEY)</string>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 </dict>
 </plist>
 
