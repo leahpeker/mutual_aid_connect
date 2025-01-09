@@ -29,7 +29,6 @@ where
         .map_err(serde::de::Error::custom)
 }
 
-
 #[derive(Deserialize)]
 pub struct UpdateCampaignRequest {
     pub title: Option<String>,
