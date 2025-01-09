@@ -40,7 +40,6 @@ class CampaignDetailsContent extends StatelessWidget {
             'Location: (${campaign.locationLat}, ${campaign.locationLng})',
             style: const TextStyle(fontSize: 16),
           ),
-
         ],
       ),
     );

@@ -115,7 +115,8 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
     return SafeArea(
       child: campaignsAsync.when(
         data: (campaigns) {
-          print('CampaignMap: rendering map with ${campaigns.length} campaigns');
+          print(
+              'CampaignMap: rendering map with ${campaigns.length} campaigns');
           return GoogleMap(
             initialCameraPosition: CameraPosition(
               target: _currentPosition ?? LatLng(40.7128, -74.0060),
@@ -127,22 +128,18 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
               print('CampaignMap: map created');
               _mapController = controller;
             },
-            markers: campaigns
-                .map((campaign) {
-                  print('CampaignMap: creating marker for campaign ${campaign.id}');
-                  return Marker(
-                    markerId: MarkerId(campaign.id),
-                    position:
-                        LatLng(campaign.locationLat, campaign.locationLng),
-                    infoWindow: InfoWindow(
-                      title: campaign.title,
-                      snippet:
-                          '\$${campaign.targetAmount.toStringAsFixed(2)} goal',
-                    ),
-                    onTap: () => _showCampaignDetails(context, campaign),
-                  );
-                })
-                .toSet(),
+            markers: campaigns.map((campaign) {
+              print('CampaignMap: creating marker for campaign ${campaign.id}');
+              return Marker(
+                markerId: MarkerId(campaign.id),
+                position: LatLng(campaign.locationLat, campaign.locationLng),
+                infoWindow: InfoWindow(
+                  title: campaign.title,
+                  snippet: '\$${campaign.targetAmount.toStringAsFixed(2)} goal',
+                ),
+                onTap: () => _showCampaignDetails(context, campaign),
+              );
+            }).toSet(),
           );
         },
         loading: () {

@@ -22,7 +22,7 @@ class CampaignRepository {
     }
   }
 
-    Future<Campaign> createCampaign({
+  Future<Campaign> createCampaign({
     required String title,
     required String description,
     required double targetAmount,
@@ -33,7 +33,6 @@ class CampaignRepository {
   }) async {
     try {
       final url = Uri.parse('$baseUrl/campaigns');
-
 
       final payload = {
         'title': title,
@@ -64,7 +63,6 @@ class CampaignRepository {
       throw Exception('Failed to connect to server: $e');
     }
   }
-
 
   /// Fetch a campaign by ID
   Future<Campaign> getCampaignById(String campaignId) async {

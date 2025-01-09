@@ -1,41 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/campaigns/data/providers/campaign_repository_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../screens/campaign_details_screen.dart';
+import '../../../../core/layout/navigation_providers.dart';
+import '../providers/campaign_form_provider.dart';
 
-
-class CreateCampaignForm extends ConsumerStatefulWidget {
+class CreateCampaignForm extends ConsumerWidget {
   const CreateCampaignForm({super.key});
 
-  @override
-  ConsumerState<CreateCampaignForm> createState() => _CreateCampaignFormState();
-}
+  Future<void> _selectDateTime(BuildContext context, WidgetRef ref) async {
+    final formNotifier = ref.read(campaignFormProvider.notifier);
 
-class _CreateCampaignFormState extends ConsumerState<CreateCampaignForm> {
-  final _formKey = GlobalKey<FormState>();
-
-  // Controllers for input fields
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _targetAmountController = TextEditingController();
-  final _locationLatController = TextEditingController();
-  final _locationLngController = TextEditingController();
-
-  // Date and time picker values
-  DateTime? _selectedEndDateTime;
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _targetAmountController.dispose();
-    _locationLatController.dispose();
-    _locationLngController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _selectDateTime(BuildContext context) async {
-    // Pick a date
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -44,131 +18,115 @@ class _CreateCampaignFormState extends ConsumerState<CreateCampaignForm> {
     );
 
     if (pickedDate != null) {
-      // Pick a time
       final pickedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
       );
 
       if (pickedTime != null) {
-        setState(() {
-          _selectedEndDateTime = DateTime(
-            pickedDate.year,
-            pickedDate.month,
-            pickedDate.day,
-            pickedTime.hour,
-            pickedTime.minute,
-          );
-        });
+        formNotifier.updateEndsAt(DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        ));
       }
     }
   }
 
-  Future<void> _onSubmit() async {
-    if (_formKey.currentState!.validate()) {
-      final title = _titleController.text.trim();
-      final description = _descriptionController.text.trim();
-      final targetAmount = double.tryParse(_targetAmountController.text.trim());
-      final locationLat = double.tryParse(_locationLatController.text.trim());
-      final locationLng = double.tryParse(_locationLngController.text.trim());
+  Future<void> _onSubmit(BuildContext context, WidgetRef ref) async {
+    final formState = ref.read(campaignFormProvider);
+    final formNotifier = ref.read(campaignFormProvider.notifier);
 
-      if (_selectedEndDateTime == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select an end date and time.')),
-        );
-        return;
-      }
+    if (formState.title.isEmpty ||
+        formState.description.isEmpty ||
+        formState.targetAmount.isEmpty ||
+        formState.locationLat.isEmpty ||
+        formState.locationLng.isEmpty ||
+        formState.endsAt == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
 
-      if (targetAmount == null || targetAmount <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Enter a valid target amount.')),
-        );
-        return;
-      }
+    final targetAmount = double.tryParse(formState.targetAmount);
+    if (targetAmount == null || targetAmount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a valid target amount')),
+      );
+      return;
+    }
 
-      
+    const imageUrl =
+        "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae";
 
-      const imageUrl = "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae";
+    try {
+      final createdCampaign =
+          await ref.read(campaignRepositoryProvider).createCampaign(
+                title: formState.title,
+                description: formState.description,
+                targetAmount: targetAmount,
+                locationLat: double.parse(formState.locationLat),
+                locationLng: double.parse(formState.locationLng),
+                endsAt: formState.endsAt!,
+                imageUrl: imageUrl,
+              );
 
-      try {
-        // Use ref.read inside the ConsumerState class context
-        final campaign = await ref.read(campaignRepositoryProvider).createCampaign(
-              title: title,
-              description: description,
-              targetAmount: targetAmount,
-              locationLat: locationLat!,
-              locationLng: locationLng!,
-              endsAt: _selectedEndDateTime!,
-              imageUrl: imageUrl,
-            );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Campaign created successfully!')),
+      );
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Campaign created successfully!')),
-        );
+      ref.read(campaignIdProvider.notifier).state = createdCampaign.id;
+      ref.read(mainScreenProvider.notifier).state = MainScreen.campaignDetails;
 
-
-        // Navigate to CampaignDetailsScreen
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => CampaignDetailsScreen(campaignId: campaign.id),
-          ),
-        );
-
-        // Clear form after success
-        _formKey.currentState!.reset();
-        setState(() {
-          _selectedEndDateTime = null;
-        });
-      } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${error.toString()}')),
-        );
-      }
+      formNotifier.resetForm();
+      Navigator.of(context).pop();
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${error.toString()}')),
+      );
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formState = ref.watch(campaignFormProvider);
+    final formNotifier = ref.read(campaignFormProvider.notifier);
+
     return Form(
-      key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            controller: _titleController,
+            initialValue: formState.title,
             decoration: const InputDecoration(labelText: 'Title'),
-            validator: (value) =>
-                value == null || value.isEmpty ? 'Title is required' : null,
+            onChanged: formNotifier.updateTitle,
           ),
           TextFormField(
-            controller: _descriptionController,
+            initialValue: formState.description,
             decoration: const InputDecoration(labelText: 'Description'),
             maxLines: 3,
-            validator: (value) => value == null || value.isEmpty
-                ? 'Description is required'
-                : null,
+            onChanged: formNotifier.updateDescription,
           ),
           TextFormField(
-            controller: _targetAmountController,
+            initialValue: formState.targetAmount,
             decoration: const InputDecoration(labelText: 'Target Amount'),
             keyboardType: TextInputType.number,
-            validator: (value) => value == null || value.isEmpty
-                ? 'Target amount is required'
-                : double.tryParse(value) == null
-                    ? 'Enter a valid number'
-                    : null,
+            onChanged: formNotifier.updateTargetAmount,
           ),
           TextFormField(
-            controller: _locationLatController,
+            initialValue: formState.locationLat,
             decoration: const InputDecoration(labelText: 'Location Lat'),
-            validator: (value) =>
-                value == null || value.isEmpty ? 'Location is required' : null,
+            keyboardType: TextInputType.number,
+            onChanged: formNotifier.updateLocationLat,
           ),
           TextFormField(
-            controller: _locationLngController,
+            initialValue: formState.locationLng,
             decoration: const InputDecoration(labelText: 'Location Lng'),
-            validator: (value) =>
-                value == null || value.isEmpty ? 'Location is required' : null,
+            keyboardType: TextInputType.number,
+            onChanged: formNotifier.updateLocationLng,
           ),
           const SizedBox(height: 16),
           Row(
@@ -183,22 +141,22 @@ class _CreateCampaignFormState extends ConsumerState<CreateCampaignForm> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _selectedEndDateTime == null
+                    formState.endsAt == null
                         ? 'Select date and time'
-                        : '${_selectedEndDateTime!.toLocal()}',
+                        : '${formState.endsAt!.toLocal()}',
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ],
               ),
               ElevatedButton(
-                onPressed: () => _selectDateTime(context),
+                onPressed: () => _selectDateTime(context, ref),
                 child: const Text('Pick Date & Time'),
               ),
             ],
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: _onSubmit,
+            onPressed: () => _onSubmit(context, ref),
             child: const Text('Create Campaign'),
           ),
         ],
@@ -206,4 +164,3 @@ class _CreateCampaignFormState extends ConsumerState<CreateCampaignForm> {
     );
   }
 }
-

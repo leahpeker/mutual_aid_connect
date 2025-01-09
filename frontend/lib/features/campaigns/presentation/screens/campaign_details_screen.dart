@@ -14,9 +14,6 @@ class CampaignDetailsScreen extends ConsumerWidget {
     final campaignAsyncValue = ref.watch(campaignDetailsProvider(campaignId));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Campaign Details'),
-      ),
       body: campaignAsyncValue.when(
         data: (campaign) => CampaignDetailsContent(campaign: campaign),
         loading: () => const Center(child: CircularProgressIndicator()),
