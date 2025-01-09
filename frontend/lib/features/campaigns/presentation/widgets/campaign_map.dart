@@ -17,6 +17,7 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
   @override
   void initState() {
     super.initState();
+    print('CampaignMap: initState called');
     _getCurrentLocation();
   }
 
@@ -48,6 +49,7 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
   }
 
   void _showCampaignDetails(BuildContext context, Campaign campaign) {
+    print('CampaignMap: showing details for campaign ${campaign.id}');
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -99,18 +101,22 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
 
   @override
   void dispose() {
+    print('CampaignMap: dispose called');
     _mapController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('CampaignMap - Build called');
+    print('CampaignMap: build called');
     final campaignsAsync = ref.watch(campaignNotifierProvider);
+    print('CampaignMap: campaign state: $campaignsAsync');
 
     return SafeArea(
       child: campaignsAsync.when(
         data: (campaigns) {
+          print(
+              'CampaignMap: rendering map with ${campaigns.length} campaigns');
           return GoogleMap(
             initialCameraPosition: CameraPosition(
               target: _currentPosition ?? LatLng(40.7128, -74.0060),
@@ -119,25 +125,32 @@ class _CampaignMapState extends ConsumerState<CampaignMap> {
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
             onMapCreated: (GoogleMapController controller) {
+              print('CampaignMap: map created');
               _mapController = controller;
             },
-            markers: campaigns
-                .map((campaign) => Marker(
-                      markerId: MarkerId(campaign.id),
-                      position:
-                          LatLng(campaign.locationLat, campaign.locationLng),
-                      infoWindow: InfoWindow(
-                        title: campaign.title,
-                        snippet:
-                            '\$${campaign.targetAmount.toStringAsFixed(2)} goal',
-                      ),
-                      onTap: () => _showCampaignDetails(context, campaign),
-                    ))
-                .toSet(),
+            markers: campaigns.map((campaign) {
+              print('CampaignMap: creating marker for campaign ${campaign.id}');
+              return Marker(
+                markerId: MarkerId(campaign.id),
+                position: LatLng(campaign.locationLat, campaign.locationLng),
+                infoWindow: InfoWindow(
+                  title: campaign.title,
+                  snippet: '\$${campaign.targetAmount.toStringAsFixed(2)} goal',
+                ),
+                onTap: () => _showCampaignDetails(context, campaign),
+              );
+            }).toSet(),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        loading: () {
+          print('CampaignMap: showing loading state');
+          return const Center(child: CircularProgressIndicator());
+        },
+        error: (error, stack) {
+          print('CampaignMap: error state: $error');
+          print('CampaignMap: error stack: $stack');
+          return Center(child: Text('Error: $error'));
+        },
       ),
     );
   }

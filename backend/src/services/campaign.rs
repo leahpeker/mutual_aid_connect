@@ -29,18 +29,20 @@ impl CampaignService {
     pub async fn create_campaign(
         &self,
         req: CreateCampaignRequest,
+        user_id: Uuid,
     ) -> Result<campaign::Model, DbErr> {
         let campaign = campaign::ActiveModel {
             id: Set(Uuid::new_v4()),
             title: Set(req.title),
             description: Set(req.description),
-            creator_id: Set(Uuid::new_v4()), // TODO: Get from auth context
+            creator_id: Set(user_id),
             target_amount: Set(req.target_amount),
             current_amount: Set(Decimal::ZERO),
             location_lat: Set(req.location_lat),
             location_lng: Set(req.location_lng),
             created_at: Set(OffsetDateTime::now_utc()),
             ends_at: Set(req.ends_at),
+            image: Set(req.image),
         };
 
         campaign.insert(&self.db).await
@@ -75,6 +77,9 @@ impl CampaignService {
         }
         if let Some(ends_at) = req.ends_at {
             campaign.ends_at = Set(ends_at);
+        }
+        if let Some(image) = req.image {
+            campaign.image = Set(image);
         }
 
         campaign.update(&self.db).await

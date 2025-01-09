@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'core/themes/app_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'features/shared/presentation/layouts/main_navigation_layout.dart';
+import 'core/layout/main_navigation_layout.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
+  print(dotenv.env['GMS_API_KEY']);
   runApp(
     ProviderScope(
       child: MutualAidConnectApp(),

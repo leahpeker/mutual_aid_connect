@@ -95,6 +95,7 @@ async fn test_update_campaign() -> Result<(), DbErr> {
         location_lat: None,
         location_lng: None,
         ends_at: None,
+        image: None,
     };
 
     let result = CampaignService::new(db)
