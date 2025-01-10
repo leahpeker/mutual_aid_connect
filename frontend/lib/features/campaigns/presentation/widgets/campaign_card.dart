@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/campaign.dart';
 import '../../../../core/themes/app_theme.dart';
+import '../../../../core/layout/navigation_providers.dart';
 
-class CampaignCard extends StatelessWidget {
+class CampaignCard extends ConsumerWidget {
   final Campaign campaign;
 
   const CampaignCard({super.key, required this.campaign});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8.0),
       color: Colors.grey[900],
@@ -52,7 +54,7 @@ class CampaignCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                _buildDonorInfoRow(),
+                _buildDonorInfoRow(context, ref),
               ],
             ),
           ),
@@ -61,7 +63,7 @@ class CampaignCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDonorInfoRow() {
+  Widget _buildDonorInfoRow(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
         SizedBox(
@@ -106,7 +108,8 @@ class CampaignCard extends StatelessWidget {
           height: 36,
           child: ElevatedButton(
             onPressed: () {
-              // Navigate to campaign details
+              ref.read(donationCampaignIdProvider.notifier).state = campaign.id;
+              ref.read(mainScreenProvider.notifier).state = MainScreen.donation;
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
