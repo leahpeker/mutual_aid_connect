@@ -12,7 +12,7 @@ class AppTheme {
     colorScheme: const ColorScheme.dark(
       primary: buttonRed,
       secondary: accentGray,
-      background: Colors.black,
+      surface: Colors.black,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

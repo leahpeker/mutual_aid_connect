@@ -4,6 +4,7 @@ import '../../features/campaigns/presentation/screens/campaign_list_screen.dart'
 import '../../features/campaigns/presentation/screens/campaign_map_screen.dart';
 import '../../features/campaigns/presentation/screens/create_campaign_screen.dart';
 import '../../features/campaigns/presentation/screens/campaign_details_screen.dart';
+import '../../features/campaigns/presentation/screens/donation_screen.dart';
 import './navigation_providers.dart';
 
 class MainNavigationLayout extends ConsumerWidget {
@@ -31,6 +32,12 @@ class MainNavigationLayout extends ConsumerWidget {
 
         body = campaignId != null
             ? CampaignDetailsScreen(campaignId: campaignId)
+            : const Center(child: Text('No campaign selected.'));
+        break;
+      case MainScreen.donation:
+        final campaignId = ref.watch(donationCampaignIdProvider);
+        body = campaignId != null
+            ? DonationScreen(campaignId: campaignId)
             : const Center(child: Text('No campaign selected.'));
         break;
     }
